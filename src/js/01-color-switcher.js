@@ -10,9 +10,7 @@ startEl.addEventListener('click', () => {
   timerId = setInterval(() => {
     bodyEl.style.backgroundColor = getRandomHexColor();
   }, 1000);
-  setTimeout(() => {
     bodyEl.style.backgroundColor = getRandomHexColor();
-  }, 0);
   startEl.disabled = true;
   stopEl.disabled = false;
 });
