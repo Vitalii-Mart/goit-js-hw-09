@@ -9,55 +9,55 @@ const hoursEl = document.querySelector('[data-hours]');
 const minutesEl = document.querySelector('[data-minutes]');
 const secondsEl = document.querySelector('[data-seconds]');
 
-
 btnEl.disabled = true;
 
-
-
-const currentDate = Date.now();
-let userDate = null;
-let setectedTime = 0;
+const currentTime = new Date();
+let chosenDate = 0;
+let interval = null;
 
 const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onClose([selectedDates]) {
-    userDate = selectedDates;
-    setectedTime = userDate.getTime();
-    const currentTime = Date.now();
-    const deltaTime = setectedTime - currentTime;
-    
-    
-    if (deltaTime <= 0) {
-      Notify.failure("Please choose a date in the future");
+  onClose(selectedDates) {
+    chosenDate = selectedDates[0];
+    const timeDifference = chosenDate - currentTime;
+    if (timeDifference <= 0) {
+      Notify.failure('Please choose a date in the future');
+      btnEl.disabled = true;
+    } else btnEl.disabled = false;
+  },
+};
+
+btnEl.addEventListener('click', start);
+
+const fp = flatpickr(inputEl, options);
+
+function start() {
+  btnEl.disabled = true;
+  inputEl.setAttribute('disabled', false);
+  inputEl.disabled = true;
+  interval = setInterval(() => {
+    const backTime = fp.selectedDates[0] - new Date();
+
+    const convertedTime = convertMs(backTime);
+    console.log(backTime);
+
+    if (backTime <= 900) {
+      clearInterval(interval);
     }
-    // return btnEl.disabled = false;
 
-  },
-};
+    timeUpdate(convertedTime);
+  }, 1000);
 
-flatpickr(inputEl, options);
-
-const timer = {
-  intervalId: null,
-  isActive: false,
-  start() {
-    if (isActive) {
-      return;
-    };
-    this.isActive - true;
-    this.intervalId = setInterval(() => {
-      // const deltaTime = selectedDates - currentDate;
-      const { days, hours, minutes, seconds } = convertMs(deltaTime);
-    }, 1000);
-  },
-};
-
-btnEl.addEventListener('click', () => {
-  timer.start();
-});
+  function timeUpdate({ days, hours, minutes, seconds }) {
+    daysEl.textContent = days;
+    hoursEl.textContent = hours;
+    minutesEl.textContent = minutes;
+    secondsEl.textContent = seconds;
+  }
+}
 
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');
